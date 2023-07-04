@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const LoginForm = () => {
+const LoginComponent = ({ toggleForm, toggleForm2 }) => {
   return (
-    <div id='login'>
+    <div>
       <h3 className='text-center text-white pt-5'>Login form</h3>
       <div className='container'>
         <div id='login-row' className='row justify-content-center align-items-center'>
@@ -11,24 +12,37 @@ const LoginForm = () => {
               <form id='login-form' className='form' action='' method='post'>
                 <h3 className='text-center text-info'>Login</h3>
                 <div className='form-group'>
-                  <label htmlFor='username' className='text-info'>Username:</label>
+                  <label htmlFor='username' className='text-info'>
+                    Username:
+                  </label>
                   <input type='text' name='username' id='username' className='form-control' />
                 </div>
                 <div className='form-group'>
-                  <label htmlFor='password' className='text-info'>Password:</label>
+                  <label htmlFor='password' className='text-info'>
+                    Password:
+                  </label>
                   <input type='password' name='password' id='password' className='form-control' />
                 </div>
                 <div className='form-group'>
                   <div className='form-check'>
                     <input className='form-check-input' type='checkbox' id='remember-me' name='remember-me' />
-                    <label className='form-check-label' htmlFor='remember-me'>Remember me</label>
+                    <label className='form-check-label' htmlFor='remember-me'>
+                      Remember me
+                    </label>
                   </div>
                 </div>
                 <div className='form-group'>
                   <input type='submit' name='submit' className='btn btn-info btn-md' value='Submit' />
                 </div>
                 <div id='register-link' className='text-right'>
-                  <a href='#' className='text-info'>Register here</a>
+                  <a href='#' className='text-info' onClick={toggleForm}>
+                    Register here
+                  </a>
+                  <div className='text-right'>
+                    <a href='#' className='text-info' onClick={toggleForm2}>
+                      Forgot Password
+                    </a>
+                  </div>
                 </div>
               </form>
             </div>
@@ -39,4 +53,9 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+LoginComponent.propTypes = {
+  toggleForm: PropTypes.func.isRequired,
+  toggleForm2: PropTypes.func.isRequired,
+};
+
+export default LoginComponent;

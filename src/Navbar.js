@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { FaShoppingBag } from 'react-icons/fa';
-import { FaShoppingCart } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [expanded, setExpanded] = useState(false);
   const [sortByOpen, setSortByOpen] = useState(false);
-
-  const dropdownStyle = {
-    width: '100px',
-  };
+  const location = useLocation();
+  const [itemCount, setItemCount] = useState(3); // State variable for item count
 
   const toggleNavbar = () => {
     setExpanded(!expanded);
@@ -42,77 +39,82 @@ const Navbar = () => {
           >
             <ul className='navbar-nav ms-auto'>
               <li className='nav-item active'>
-                <a className='nav-link' href='#'>
-                  <FaShoppingBag />
-                </a>
+                <Link to='/Cart' className='nav-link'>
+                  <div className='position-relative d-inline-block'>
+                    <FaShoppingBag color='black' />
+                    {itemCount > 0 && (
+                      <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary'>
+                        {itemCount}
+                      </span>
+                    )}
+                  </div>
+                </Link>
               </li>
               <li className='nav-item'>
-                <a className='nav-link' href='#'>
-                  <FaShoppingCart />
-                </a>
-              </li>
-              <li className='nav-item'>
-                <Link to='/login' className='nav-link text-black'>Login</Link>
+                <Link to='/login' className='nav-link text-black'>
+                  Login
+                </Link>
               </li>
             </ul>
           </div>
         </div>
       </nav>
 
-      <nav className='navbar bg-body-tertiary'>
-        <div className='container-fluid'>
-          <div className='container-md-fluid'>
-            <h3 className='custom-heading'>Heading</h3>
-          </div>
-
-          <div className='d-flex justify-content-end gap-2'>
-            <div className='input-group' style={{ width: '180px' }}>
-              <input
-                type='text'
-                className='form-control'
-                placeholder='Search...'
-              />
-              <button className='btn btn-primary' type='button'>
-                Search
-              </button>
+      {location.pathname !== '/Cart' && (
+        <nav className='navbar bg-body-tertiary'>
+          <div className='container-fluid'>
+            <div className='container-md-fluid'>
+              <h3 className='custom-heading'>Heading</h3>
             </div>
 
-            <div
-              className={`dropdown ${sortByOpen ? 'show' : ''}`}
-              style={dropdownStyle}
-            >
-              <button
-                className='btn btn-secondary dropdown-toggle'
-                type='button'
-                id='sortByDropdown'
-                onClick={toggleSortByDropdown}
-              >
-                Sort By
-              </button>
-              <ul
-                className={`dropdown-menu ${sortByOpen ? 'show' : ''}`}
-                aria-labelledby='sortByDropdown'
-              >
-                <li>
-                  <a className='dropdown-item' href='#'>
-                    Option 1
-                  </a>
-                </li>
-                <li>
-                  <a className='dropdown-item' href='#'>
-                    Option 2
-                  </a>
-                </li>
-                <li>
-                  <a className='dropdown-item' href='#'>
-                    Option 3
-                  </a>
-                </li>
-              </ul>
+            <div className='d-flex justify-content-end gap-2'>
+              <div className='input-group' style={{ width: '180px' }}>
+                <input
+                  type='text'
+                  className='form-control'
+                  placeholder='Search...'
+                />
+                <button className='btn btn-primary' type='button'>
+                  Search
+                </button>
+              </div>
+
+              <div className='dropdown'>
+                <button
+                  className='btn btn-secondary dropdown-toggle'
+                  type='button'
+                  id='sortByDropdown'
+                  onClick={toggleSortByDropdown}
+                >
+                  Sort By
+                </button>
+                <ul
+                  className={`dropdown-menu ${
+                    sortByOpen ? 'show' : ''
+                  }`}
+                  aria-labelledby='sortByDropdown'
+                >
+                  <li>
+                    <a className='dropdown-item' href='#'>
+                      Option 1
+                    </a>
+                  </li>
+                  <li>
+                    <a className='dropdown-item' href='#'>
+                      Option 2
+                    </a>
+                  </li>
+                  <li>
+                    <a className='dropdown-item' href='#'>
+                      Option 3
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
     </div>
   );
 };

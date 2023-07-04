@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Main from './Main';
-import Login from './login';
-import Footer from "./footer";
+import Login from './ValidationComp';
+import Cart from './Cart';
 
 const App = () => {
   return (
@@ -13,6 +13,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Main />} />
           <Route path='/login' element={<Login />} />
+          <Route path ='/Cart' element={<Cart/>}/>
         </Routes>
       </div>
     </Router>
