@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import imageSrc from './p2.jpg';
+import imageSrc from '../../images/p2.jpg';
 import { Row, Col } from 'react-bootstrap';
 
 const ProductCard = () => {

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from './Navbar';
+import Navbar from '../main/Navbar';
 import { MdDelete, MdAdd, MdRemove } from 'react-icons/md';
-import imageSrc from './p2.jpg';
+import imageSrc from '../../images/p2.jpg';
+import { Link } from 'react-router-dom';
 
 const CartItems = () => {
   const [cartProducts, setCartProducts] = useState([]);
 
   useEffect(() => {
-    // Mock data to simulate the response from the server
     const mockData = [
       {
         id: 1,
@@ -23,41 +23,17 @@ const CartItems = () => {
       },
       {
         id: 3,
-        title: { name: 'Product 3', image: imageSrc },
-        color: 'Green',
-        price: 50,
+        title: { name: 'Product 1', image: imageSrc },
+        color: 'Red',
+        price: 100,
       },
       {
         id: 4,
-        title: { name: 'Product 4', image: imageSrc },
-        color: 'Yellow',
-        price: 30,
+        title: { name: 'Product 2', image: imageSrc },
+        color: 'Blue',
+        price: 5,
       },
-      {
-        id: 5,
-        title: { name: 'Product 5', image: imageSrc },
-        color: 'Black',
-        price: 200,
-      },
-      {
-        id: 6,
-        title: { name: 'Product 6', image: imageSrc },
-        color: 'White',
-        price: 25,
-      },
-      {
-        id: 7,
-        title: { name: 'Product 7', image: imageSrc },
-        color: 'Purple',
-        price: 75,
-      },
-      {
-        id: 8,
-        title: { name: 'Product 8', image: imageSrc },
-        color: 'Orange',
-        price: 10,
-      },
-      // Add more products with unique IDs
+      
     ];
 
     setCartProducts(mockData);
@@ -178,14 +154,10 @@ const CartItems = () => {
                 </table>
               </div>
               <div className="container mt-3 text-end">
-                
-                  
-                    {renderTotal()}
-                  
-                 
-                    <button className="btn btn-primary">Order Now</button>
-                  
-                
+                {renderTotal()}
+                <Link to="/Order" className="btn btn-primary">
+                  Order Now
+                </Link>
               </div>
             </div>
           </div>
