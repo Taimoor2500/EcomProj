@@ -5,29 +5,36 @@ import ForgotPasswordComponent from './password';
 
 const Val = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isSignup, setIsSignup] = useState(false);
   const [fp, setFp] = useState(false);
-  const [isSign, setIsSign] = useState(false);
 
-  const toggleForm = () => {
-    setIsLogin(false);
+  const toggleLoginForm = () => {
+    setIsLogin(true);
+    setIsSignup(false);
     setFp(false);
   };
 
-  const toggleForm2 = () => {
+  const toggleSignupForm = () => {
     setIsLogin(false);
-    setIsSign(false);
+    setIsSignup(true);
+    setFp(false);
+  };
+
+  const toggleForgotPasswordForm = () => {
+    setIsLogin(false);
+    setIsSignup(false);
     setFp(true);
   };
 
   return (
     <div className='container'>
-      {isLogin ? (
-        <LoginComponent toggleForm={toggleForm} toggleForm2={toggleForm2} />
-      ) : fp ? (
-        <ForgotPasswordComponent />
-      ) : (
-        <SignupComponent toggleForm={toggleForm} />
+      {isLogin && (
+        <LoginComponent toggleForm={toggleSignupForm} toggleForm2={toggleForgotPasswordForm} />
       )}
+      {isSignup && (
+        <SignupComponent toggleForm={toggleLoginForm} />
+      )}
+      {fp && <ForgotPasswordComponent />}
     </div>
   );
 };

@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { React, Link } from './commonImports';
 import Navbar from '../main/Navbar';
-import { MdDelete, MdAdd, MdRemove } from 'react-icons/md';
 import imageSrc from '../../images/p2.jpg';
-import { Link } from 'react-router-dom';
+import { DeleteButton, IncreaseQuantityButton, DecreaseQuantityButton } from '../orders/commonComponents';
 
 const CartItems = () => {
-  const [cartProducts, setCartProducts] = useState([]);
+  const [cartProducts, setCartProducts] = React.useState([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const mockData = [
       {
         id: 1,
@@ -33,7 +32,6 @@ const CartItems = () => {
         color: 'Blue',
         price: 5,
       },
-      
     ];
 
     setCartProducts(mockData);
@@ -134,19 +132,13 @@ const CartItems = () => {
                         </th>
                         <td>{val.color}</td>
                         <td>
-                          <button className="btn border-0 rounded-2 shadow-sm mx-2" onClick={() => decreaseQuantity(val.id)}>
-                            <MdRemove style={{ color: 'black' }} />
-                          </button>
+                          <DecreaseQuantityButton onClick={() => decreaseQuantity(val.id)} />
                           {val.quantity || 1}
-                          <button className="btn border-0 rounded-2 shadow-sm mx-2" onClick={() => increaseQuantity(val.id)}>
-                            <MdAdd style={{ color: 'black' }} />
-                          </button>
+                          <IncreaseQuantityButton onClick={() => increaseQuantity(val.id)} />
                         </td>
                         <td>${(val.price || 0) * (val.quantity || 1)}</td>
                         <td>
-                          <button className="btn border-0 rounded-2 shadow-sm mx-2" onClick={() => remItem(val.id)}>
-                            <MdDelete style={{ color: 'red' }} />
-                          </button>
+                          <DeleteButton onClick={() => remItem(val.id)} />
                         </td>
                       </tr>
                     ))}

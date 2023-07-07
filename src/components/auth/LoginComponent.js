@@ -2,6 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const LoginComponent = ({ toggleForm, toggleForm2 }) => {
+  const handleSubmit = e => {
+    e.preventDefault();
+    // Handle login form submission logic here
+  };
+
+  const handleRegisterClick = () => {
+    toggleForm2();
+  };
+
   return (
     <div>
       <h3 className='text-center text-white pt-5'>Login form</h3>
@@ -9,7 +18,7 @@ const LoginComponent = ({ toggleForm, toggleForm2 }) => {
         <div id='login-row' className='row justify-content-center align-items-center'>
           <div id='login-column' className='col-md-6'>
             <div id='login-box' className='col-md-12'>
-              <form id='login-form' className='form' action='' method='post'>
+              <form id='login-form' className='form' onSubmit={handleSubmit}>
                 <h3 className='text-center text-info'>Login</h3>
                 <div className='form-group'>
                   <label htmlFor='username' className='text-info'>
@@ -35,12 +44,12 @@ const LoginComponent = ({ toggleForm, toggleForm2 }) => {
                   <input type='submit' name='submit' className='btn btn-info btn-md' value='Submit' />
                 </div>
                 <div id='register-link' className='text-right'>
-                  <a href='#' className='text-info' onClick={toggleForm}>
-                    Register here
+                  <a href='#' className='text-info' onClick={handleRegisterClick}>
+                    Forgot password
                   </a>
                   <div className='text-right'>
-                    <a href='#' className='text-info' onClick={toggleForm2}>
-                      Forgot Password
+                    <a href='#' className='text-info' onClick={toggleForm}>
+                      Register Here
                     </a>
                   </div>
                 </div>

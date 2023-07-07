@@ -7,6 +7,7 @@ import Login from "./components/auth/ValidationComp";
 import Cart from "./components/orders/Cart";
 import Order from "./components/orders/Order";
 
+
 const App = () => {
   return (
     <Router>
@@ -15,7 +16,8 @@ const App = () => {
           <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
           <Route path="/Cart" element={<Cart />} />
-          <Route path="/Order" element={<Order />} />
+          <Route path="/Order" element={<Order />} />     
+         
         </Routes>
       </div>
     </Router>

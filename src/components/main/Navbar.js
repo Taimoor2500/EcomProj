@@ -1,13 +1,25 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { FaShoppingBag } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [expanded, setExpanded] = useState(false);
   const [sortByOpen, setSortByOpen] = useState(false);
+  const [selectedSortOption, setSelectedSortOption] = useState("");
   const location = useLocation();
-  const [itemCount, setItemCount] = useState(3); // State variable for item count
+  const [itemCount, setItemCount] = useState(3);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    onSearch(searchQuery);
+  };
 
   const toggleNavbar = () => {
     setExpanded(!expanded);
@@ -17,13 +29,21 @@ const Navbar = () => {
     setSortByOpen(!sortByOpen);
   };
 
+  const handleSortOptionChange = (option) => {
+    setSelectedSortOption(option);
+    setSortByOpen(false); 
+    onSortOptionChange(option);
+  };
+
   return (
     <div className="container-fluid">
       <nav className="navbar bg-body-tertiary navbar-expand-lg">
         <div className="container-fluid">
-          <a className="navbar-brand navbar-brand-custom" href="#">
-            E-commerce
-          </a>
+         
+            <Link to="/" className="nav-link navbar-brand navbar-brand-custom text-black">
+              Ecommerce
+            </Link>
+        
           <button
             className={`navbar-toggler ${expanded ? "collapsed" : ""}`}
             type="button"
@@ -73,8 +93,14 @@ const Navbar = () => {
                   type="text"
                   className="form-control"
                   placeholder="Search..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                 />
-                <button className="btn btn-primary" type="button">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={handleSearchSubmit}
+                >
                   Search
                 </button>
               </div>
@@ -93,18 +119,25 @@ const Navbar = () => {
                   aria-labelledby="sortByDropdown"
                 >
                   <li>
-                    <a className="dropdown-item" href="#">
-                      Option 1
+                    <a
+                      className={`dropdown-item ${
+                        selectedSortOption === "Low" ? "active" : ""
+                      }`}
+                      href="#"
+                      onClick={() => handleSortOptionChange("low")} 
+                    >
+                      Low
                     </a>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="#">
-                      Option 2
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Option 3
+                    <a
+                      className={`dropdown-item ${
+                        selectedSortOption === "High" ? "active" : ""
+                      }`}
+                      href="#"
+                      onClick={() => handleSortOptionChange("high")} // Add parameter
+                    >
+                      High
                     </a>
                   </li>
                 </ul>

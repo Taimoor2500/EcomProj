@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../main/Navbar';
 import { MdArrowForward } from 'react-icons/md';
 import imageSrc from '../../images/p2.jpg';
-
+import { React, Link, Offcanvas } from './commonImports';
+import OrderOffcanvas from './orderDetails'; 
 
 const Order = () => {
   const [cartProducts, setCartProducts] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
   useEffect(() => {
     const mockData = [
@@ -19,39 +22,23 @@ const Order = () => {
         ],
         amount: 2015,
       },
-     
     ];
 
     setCartProducts(mockData);
   }, []);
 
- 
-
-  const decreaseQuantity = (orderId, productId) => {
-    const updatedCart = cartProducts.map((order) => {
-      if (order.id === orderId) {
-        const updatedProducts = order.products.map((product) => {
-          if (product.id === productId && product.quantity > 1) {
-            return {
-              ...product,
-              quantity: product.quantity - 1,
-            };
-          }
-          return product;
-        });
-        return {
-          ...order,
-          products: updatedProducts,
-        };
-      }
-      return order;
-    });
-    setCartProducts(updatedCart);
+  const openOffcanvas = (order) => {
+    setSelectedOrder(order);
+    setIsOffcanvasOpen(true);
   };
 
- 
+  const closeOffcanvas = () => {
+    setIsOffcanvasOpen(false);
+  };
 
- 
+  if (!cartProducts || cartProducts.length === 0) {
+    return <div>No orders available.</div>;
+  }
 
   return (
     <div>
@@ -86,23 +73,12 @@ const Order = () => {
                       <tr className="my-3" style={{ lineHeight: 'unset' }} key={order.id}>
                         <td>{order.date}</td>
                         <td>{order.orderNumber}</td>
-                        <td>
-                          {order.products.map((product) => (
-                            <div key={product.id}>
-                              <img
-                                src={product.title.image}
-                                alt={product.title.name}
-                                style={{ width: '50px', marginRight: '10px' }}
-                              />
-                              {product.title.name} - {product.color} - {product.quantity} x ${product.price}
-                            </div>
-                          ))}
-                        </td>
+                        <td>{order.products.length} Products</td>
                         <td>${order.amount}</td>
                         <td>
                           <button
                             className="btn border-0 rounded-2 shadow-sm mx-2"
-                           
+                            onClick={() => openOffcanvas(order)}
                           >
                             <MdArrowForward style={{ color: 'black' }} />
                           </button>
@@ -116,6 +92,10 @@ const Order = () => {
           </div>
         </div>
       </div>
+
+      {selectedOrder && (
+        <OrderOffcanvas show={isOffcanvasOpen} onHide={closeOffcanvas} selectedOrder={selectedOrder} />
+      )}
     </div>
   );
 };
