@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../main/Navbar';
 import { MdArrowForward } from 'react-icons/md';
-import imageSrc from '../../images/p2.jpg';
 import { React, Link, Offcanvas } from './commonImports';
-import OrderOffcanvas from './orderDetails'; 
+import OrderOffcanvas from './orderDetails';
 
 const Order = () => {
   const [cartProducts, setCartProducts] = useState([]);
@@ -11,20 +10,17 @@ const Order = () => {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
   useEffect(() => {
-    const mockData = [
-      {
-        id: 1,
-        date: '2023-07-05',
-        orderNumber: 'ORD001',
-        products: [
-          { id: 1, title: { name: 'Product 1', image: imageSrc }, color: 'Red', price: 1000, quantity: 2 },
-          { id: 2, title: { name: 'Product 2', image: imageSrc }, color: 'Blue', price: 15, quantity: 1 },
-        ],
-        amount: 2015,
-      },
-    ];
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/orders');
+        const data = await response.json();
+        setCartProducts(data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
 
-    setCartProducts(mockData);
+    fetchOrders();
   }, []);
 
   const openOffcanvas = (order) => {
@@ -39,6 +35,11 @@ const Order = () => {
   if (!cartProducts || cartProducts.length === 0) {
     return <div>No orders available.</div>;
   }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
 
   return (
     <div>
@@ -70,10 +71,10 @@ const Order = () => {
                   </thead>
                   <tbody className="h5">
                     {cartProducts.map((order) => (
-                      <tr className="my-3" style={{ lineHeight: 'unset' }} key={order.id}>
-                        <td>{order.date}</td>
+                      <tr className="my-3" style={{ lineHeight: 'unset' }} key={order._id}>
+                        <td>{formatDate(order.date)}</td>
                         <td>{order.orderNumber}</td>
-                        <td>{order.products.length} Products</td>
+                        <td>{order.products.length}</td>
                         <td>${order.amount}</td>
                         <td>
                           <button

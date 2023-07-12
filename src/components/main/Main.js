@@ -8,6 +8,7 @@ const Main = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
 
   const handleLinkClick = (path) => {
     navigate(path);
@@ -21,6 +22,10 @@ const Main = () => {
     setSortOption(option);
   };
 
+  const handlePageChange = (page) => {
+    setPageNumber(page);
+  };
+
   return (
     <div>
       <Navbar
@@ -28,8 +33,8 @@ const Main = () => {
         onSearch={handleSearch}
         onSortOptionChange={handleSortOptionChange}
       />
-      <ProductCard searchQuery={searchQuery} sort={sortOption} />
-      <Footer />
+      <ProductCard searchQuery={searchQuery} sort={sortOption} page={pageNumber} />
+      <Footer onPageChange={handlePageChange} />
     </div>
   );
 };
