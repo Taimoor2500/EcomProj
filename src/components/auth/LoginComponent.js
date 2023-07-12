@@ -1,10 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from "react-router-dom";
 
 const LoginComponent = ({ toggleForm, toggleForm2 }) => {
-  const handleSubmit = e => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    // Handle login form submission logic here
+   
+
+    
+    const loginData = {
+      username,
+      password
+    };
+
+    try {
+  
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      });
+
+      if (response.ok) {
+        
+        console.log('User exists');
+        navigate("/");
+      } else {
+        
+        console.log('User does not exist');
+      }
+    } catch (error) {
+      
+      console.error('Error:', error);
+    }
+
+
   };
 
   const handleRegisterClick = () => {
@@ -24,13 +60,27 @@ const LoginComponent = ({ toggleForm, toggleForm2 }) => {
                   <label htmlFor='username' className='text-info'>
                     Username:
                   </label>
-                  <input type='text' name='username' id='username' className='form-control' />
+                  <input
+                    type='text'
+                    name='username'
+                    id='username'
+                    className='form-control'
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                  />
                 </div>
                 <div className='form-group'>
                   <label htmlFor='password' className='text-info'>
                     Password:
                   </label>
-                  <input type='password' name='password' id='password' className='form-control' />
+                  <input
+                    type='password'
+                    name='password'
+                    id='password'
+                    className='form-control'
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
                 </div>
                 <div className='form-group'>
                   <div className='form-check'>

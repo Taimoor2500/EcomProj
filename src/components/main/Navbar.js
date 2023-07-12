@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import { FaShoppingBag } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
+import { FaShoppingBag } from 'react-icons/fa';
+import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [expanded, setExpanded] = useState(false);
   const [sortByOpen, setSortByOpen] = useState(false);
-  const [selectedSortOption, setSelectedSortOption] = useState("");
+  const [selectedSortOption, setSelectedSortOption] = useState('');
   const location = useLocation();
-  const [itemCount, setItemCount] = useState(3);
-  const [searchQuery, setSearchQuery] = useState("");
+  const itemCount = useSelector((state) => state.counter);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -31,7 +32,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
 
   const handleSortOptionChange = (option) => {
     setSelectedSortOption(option);
-    setSortByOpen(false); 
+    setSortByOpen(false);
     onSortOptionChange(option);
   };
 
@@ -39,13 +40,11 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
     <div className="container-fluid">
       <nav className="navbar bg-body-tertiary navbar-expand-lg">
         <div className="container-fluid">
-         
-            <Link to="/" className="nav-link navbar-brand navbar-brand-custom text-black">
-              Ecommerce
-            </Link>
-        
+          <Link to="/" className="nav-link navbar-brand navbar-brand-custom text-black">
+            Ecommerce
+          </Link>
           <button
-            className={`navbar-toggler ${expanded ? "collapsed" : ""}`}
+            className={`navbar-toggler ${expanded ? 'collapsed' : ''}`}
             type="button"
             onClick={toggleNavbar}
             aria-expanded={expanded}
@@ -53,10 +52,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div
-            className={`collapse navbar-collapse ${expanded ? "show" : ""}`}
-            id="navbarResponsive"
-          >
+          <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
@@ -80,7 +76,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
         </div>
       </nav>
 
-      {location.pathname !== "/Cart" && location.pathname !== "/Order" && (
+      {location.pathname !== '/Cart' && location.pathname !== '/Order' && (
         <nav className="navbar bg-body-tertiary">
           <div className="container-fluid">
             <div className="container-md-fluid">
@@ -88,7 +84,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
             </div>
 
             <div className="d-flex justify-content-end gap-2">
-              <div className="input-group" style={{ width: "180px" }}>
+              <div className="input-group" style={{ width: '180px' }}>
                 <input
                   type="text"
                   className="form-control"
@@ -96,11 +92,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={handleSearchSubmit}
-                >
+                <button className="btn btn-primary" type="button" onClick={handleSearchSubmit}>
                   Search
                 </button>
               </div>
@@ -115,27 +107,23 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                   Sort By
                 </button>
                 <ul
-                  className={`dropdown-menu ${sortByOpen ? "show" : ""}`}
+                  className={`dropdown-menu ${sortByOpen ? 'show' : ''}`}
                   aria-labelledby="sortByDropdown"
                 >
                   <li>
                     <a
-                      className={`dropdown-item ${
-                        selectedSortOption === "Low" ? "active" : ""
-                      }`}
+                      className={`dropdown-item ${selectedSortOption === 'Low' ? 'active' : ''}`}
                       href="#"
-                      onClick={() => handleSortOptionChange("low")} 
+                      onClick={() => handleSortOptionChange('low')}
                     >
                       Low
                     </a>
                   </li>
                   <li>
                     <a
-                      className={`dropdown-item ${
-                        selectedSortOption === "High" ? "active" : ""
-                      }`}
+                      className={`dropdown-item ${selectedSortOption === 'High' ? 'active' : ''}`}
                       href="#"
-                      onClick={() => handleSortOptionChange("high")} // Add parameter
+                      onClick={() => handleSortOptionChange('high')}
                     >
                       High
                     </a>
