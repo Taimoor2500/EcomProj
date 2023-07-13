@@ -27,4 +27,4 @@ yarn-error.log*
 
 /server/uploads
 /server/package-lock.json
-package-lock.json
+README.md
