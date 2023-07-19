@@ -28,6 +28,8 @@ const CartItems = () => {
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const session = useSelector((state) => state.session);
+  const { email } = useSelector((state) => state.session);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -56,6 +58,13 @@ const CartItems = () => {
   };
 
   const placeOrder = async () => {
+    if (!session.token || session.token.trim() === "") {
+      navigate("/login");
+      return;
+    }
+
+   
+
     try {
       const products = cart.map((product) => ({
         title: {
@@ -68,8 +77,10 @@ const CartItems = () => {
       }));
 
       const orderNumber = generateUniqueNumber();
+      
 
       const orderData = {
+        email : email,
         date: new Date(),
         orderNumber,
         products,
@@ -84,11 +95,11 @@ const CartItems = () => {
 
       dispatch(setCart([]));
       dispatch(resetCounter());
-      alert("Order placed successfully!");
+      
 
       navigate("/Order");
     } catch (error) {
-      console.log(error);
+      
       console.error("Error placing order:", error);
     }
   };
@@ -199,9 +210,13 @@ const CartItems = () => {
               </div>
               <div className="container mt-3 text-end">
                 {renderTotal()}
-                <button className="btn btn-primary" onClick={placeOrder}>
-                  Order Now
-                </button>
+                {cart.length > 0 ? (
+                  <button className="btn btn-primary" onClick={placeOrder}>
+                    Order Now
+                  </button>
+                ) : (
+                  <p style={{ color: "red" }}>Cart empty</p>
+                )}
               </div>
             </div>
           </div>

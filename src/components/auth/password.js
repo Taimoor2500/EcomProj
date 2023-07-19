@@ -1,111 +1,102 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import ValidationComp from './ValidationComp';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const ForgotPasswordComponent = () => {
-  const [showPasswordFields, setShowPasswordFields] = useState(false);
+const ResetPasswordForm = () => {
+  const [email, setEmail] = useState('');
+  const [showEmailInput, setShowEmailInput] = useState(true);
+  const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showChangeButton, setShowChangeButton] = useState(false);
-  const [passwordChanged, setPasswordChanged] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    setShowPasswordFields(true);
-    setShowChangeButton(true);
+  const handleSendToken = () => {
+    axios
+      .post('http://localhost:5000/api/login/check', { email })
+      .then(response => {
+        setShowEmailInput(false);
+      })
+      .catch(error => {
+        setErrorMessage('Error sending reset token. Please try again.');
+      });
   };
 
-  const handleNewPasswordChange = e => {
-    setNewPassword(e.target.value);
+  const handleResetPassword = () => {
+    axios
+      .post('http://localhost:5000/api/login/validate-token', { resetToken })
+      .then(response => {
+        if (response.data.isValid) {
+          axios
+            .put('http://localhost:5000/api/login/password', {
+              email: email,
+              resetToken: resetToken,
+              newPassword: newPassword
+            })
+            .then(response => {
+              navigate('/login');
+            })
+            .catch(error => {
+              setErrorMessage('Error resetting password. Please try again.');
+            });
+        } else {
+          setErrorMessage('Invalid reset token. Please try again.');
+        }
+      })
+      .catch(error => {
+        setErrorMessage('Error validating token. Please try again.');
+      });
   };
 
-  const handleConfirmPasswordChange = e => {
-    setConfirmPassword(e.target.value);
-  };
-
-  const handleChangePassword = () => {
-    // Perform the password change logic here
-    // You can access the newPassword and confirmPassword values from state
-    console.log('Password changed');
-    setPasswordChanged(true);
-  };
-
-  const handleGoBackToLogin = () => {
-    setPasswordChanged(false);
-    setShowPasswordFields(false);
-    setShowChangeButton(false);
+  const handleTokenChange = e => {
+    setResetToken(e.target.value);
   };
 
   return (
-    <div className='container'>
-      <h3 className='text-center text-white pt-5'>Forgot Password</h3>
-      <div className='row justify-content-center'>
-        <div className='col-md-6'>
-          <div className='card'>
-            <div className='card-body'>
-              <div className='container-fluid'>
-                {!passwordChanged ? (
-                  <>
-                    <h5 className='card-title text-center'>Reset Password</h5>
-                    <form onSubmit={handleSubmit}>
-                      <div className='mb-3'>
-                        <label htmlFor='email' className='form-label'>
-                          Email
-                        </label>
-                        <input type='email' className='form-control' id='email' />
-                      </div>
-                      <button type='submit' className='btn btn-primary'>
-                        Reset Password
-                      </button>
-                    </form>
-                    {showPasswordFields && (
-                      <div>
-                        <div className='mb-3'>
-                          <label htmlFor='newPassword' className='form-label'>
-                            New Password
-                          </label>
-                          <input
-                            type='password'
-                            className='form-control'
-                            id='newPassword'
-                            value={newPassword}
-                            onChange={handleNewPasswordChange}
-                          />
-                        </div>
-                        <div className='mb-3'>
-                          <label htmlFor='confirmPassword' className='form-label'>
-                            Confirm Password
-                          </label>
-                          <input
-                            type='password'
-                            className='form-control'
-                            id='confirmPassword'
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                          />
-                        </div>
-                        {showChangeButton && (
-                          <button
-                            type='button'
-                            className='btn btn-primary'
-                            onClick={handleChangePassword}
-                          >
-                            Change Password
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <ValidationComp />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="container">
+      <h2 className="mb-4">Reset Password</h2>
+      {showEmailInput && (
+        <>
+          <p>Please enter your email address to receive a reset token:</p>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="form-control mb-2"
+          />
+          <button onClick={handleSendToken} className="btn btn-primary">
+            Send Token
+          </button>
+        </>
+      )}
+      {!showEmailInput && (
+        <>
+          <p>Please enter the reset token:</p>
+          <input
+            type="password"
+            placeholder="Reset Token"
+            value={resetToken}
+            onChange={handleTokenChange}
+            className="form-control mb-2"
+          />
+          {resetToken && (
+            <>
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                className="form-control mb-2"
+              />
+              <button onClick={handleResetPassword} className="btn btn-primary">
+                Reset Password
+              </button>
+            </>
+          )}
+        </>
+      )}
+      {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
     </div>
   );
 };
 
-export default ForgotPasswordComponent;
+export default ResetPasswordForm;

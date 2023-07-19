@@ -3,16 +3,19 @@ import Navbar from '../main/Navbar';
 import { MdArrowForward } from 'react-icons/md';
 import { React, Link, Offcanvas } from './commonImports';
 import OrderOffcanvas from './orderDetails';
+import { useSelector } from 'react-redux';
 
 const Order = () => {
   const [cartProducts, setCartProducts] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
-
+  const { email } = useSelector((state) => state.session);
+  console.log(email);
   useEffect(() => {
+    
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/orders');
+        const response = await fetch(`http://localhost:5000/api/orders?email=${email}`);
         const data = await response.json();
         setCartProducts(data);
       } catch (error) {
@@ -21,7 +24,7 @@ const Order = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [email]);
 
   const openOffcanvas = (order) => {
     setSelectedOrder(order);

@@ -11,6 +11,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [selectedSortOption, setSelectedSortOption] = useState('');
   const location = useLocation();
   const itemCount = useSelector((state) => state.counter);
+  const session = useSelector((state) => state.session);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (event) => {
@@ -35,6 +36,8 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
     setSortByOpen(false);
     onSortOptionChange(option);
   };
+
+ 
 
   return (
     <div className="container-fluid">
@@ -67,9 +70,13 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/login" className="nav-link text-black">
-                  Login
-                </Link>
+                {session.token ? (
+                  <span className="nav-link text-black">Welcome, {session.name}</span>
+                ) : (
+                  <Link to="/login" className="nav-link text-black">
+                    Login
+                  </Link>
+                )}
               </li>
             </ul>
           </div>

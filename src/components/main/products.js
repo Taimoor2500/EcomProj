@@ -5,6 +5,8 @@ import { Row, Col, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { increment } from '../../redux/reducers/counter';
 import { addToCart } from '../../redux/reducers/cart';
+import { useNavigate } from 'react-router-dom';
+
 
 const ProductCard = ({ searchQuery, sort, page }) => {
   const [sortedProducts, setSortedProducts] = useState([]);
@@ -12,6 +14,9 @@ const ProductCard = ({ searchQuery, sort, page }) => {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  const navigate = useNavigate();
+  const session = useSelector((state) => state.session);
+  const token = session.token;
 
   useEffect(() => {
     fetchProducts();
@@ -19,18 +24,18 @@ const ProductCard = ({ searchQuery, sort, page }) => {
 
   const fetchProducts = async () => {
     try {
-      setIsLoading(true); 
+      setIsLoading(true);
       const response = await fetch(`http://localhost:5000/api/products?page=${page}`);
       const data = await response.json();
       setSortedProducts(data);
       setDisplayedProducts(data.slice(0, 8));
       console.log(data);
       setTimeout(() => {
-        setIsLoading(false); // Hide loader after 2 seconds
+        setIsLoading(false);
       }, 3000);
     } catch (error) {
       console.log('Error fetching products:', error);
-      setIsLoading(false); // Hide loader on error
+      setIsLoading(false);
     }
   };
 
@@ -39,6 +44,11 @@ const ProductCard = ({ searchQuery, sort, page }) => {
   }, [sort]);
 
   const handleOrder = (product) => {
+    if (!token || token.trim() === '') {
+      navigate('/login');
+      return;
+    }
+
     dispatch(increment());
     dispatch(addToCart(product));
   };
@@ -68,7 +78,7 @@ const ProductCard = ({ searchQuery, sort, page }) => {
 
   return (
     <div className="container-fluid my-4">
-      {isLoading ? ( // Render loader if isLoading is true
+      {isLoading ? (
         <div className="text-center">
           <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>

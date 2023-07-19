@@ -1,9 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const SignupComponent = ({ toggleForm }) => {
-  const handleSubmit = e => {
+const SignupComponent = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const signupData = {
+      name,
+      email,
+      password
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/signup', signupData);
+      console.log(response.data);
+
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLoginClick = () => {
+    navigate("/login");
   };
 
   return (
@@ -20,26 +46,44 @@ const SignupComponent = ({ toggleForm }) => {
                     <label htmlFor='name' className='form-label'>
                       Name
                     </label>
-                    <input type='text' className='form-control' id='name' />
+                    <input
+                      type='text'
+                      className='form-control'
+                      id='name'
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
                   </div>
                   <div className='mb-3'>
                     <label htmlFor='email' className='form-label'>
                       Email
                     </label>
-                    <input type='email' className='form-control' id='email' />
+                    <input
+                      type='email'
+                      className='form-control'
+                      id='email'
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
                   <div className='mb-3'>
                     <label htmlFor='password' className='form-label'>
                       Password
                     </label>
-                    <input type='password' className='form-control' id='password' />
+                    <input
+                      type='password'
+                      className='form-control'
+                      id='password'
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                   <button type='submit' className='btn btn-primary'>
                     Sign Up
                   </button>
                   <p className='text-center mt-3'>
                     Already have an account?{' '}
-                    <button className='btn btn-link p-0' onClick={toggleForm}>
+                    <button className='btn btn-link p-0' onClick={handleLoginClick}>
                       Login here
                     </button>
                   </p>
@@ -53,8 +97,6 @@ const SignupComponent = ({ toggleForm }) => {
   );
 };
 
-SignupComponent.propTypes = {
-  toggleForm: PropTypes.func.isRequired,
-};
+
 
 export default SignupComponent;

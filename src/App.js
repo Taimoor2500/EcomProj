@@ -3,9 +3,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import Main from "./components/main/Main";
-import Login from "./components/auth/ValidationComp";
+import Login from "./components/auth/LoginComponent";
+import Signup from "./components/auth/SignupComponent";
+import Pass from "./components/auth/password";
 import Cart from "./components/orders/Cart";
 import Order from "./components/orders/Order";
+import ConfirmPass from "./components/auth/ConfirmPass";
+
+
 
 
 const App = () => {
@@ -14,9 +19,13 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<Main />} />
+          <Route path="/reset-password" element={<ConfirmPass />} />
           <Route path="/login" element={<Login />} />
           <Route path="/Cart" element={<Cart />} />
-          <Route path="/Order" element={<Order />} />     
+          <Route path="/Order" element={<Order />} /> 
+          <Route path="/signup" element={<Signup />}/>
+          <Route path="/pass" element={<Pass />}/> 
+          
          
         </Routes>
       </div>

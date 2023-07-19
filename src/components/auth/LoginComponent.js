@@ -1,104 +1,112 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setToken } from '../../redux/reducers/sessionSlice';
 
-const LoginComponent = ({ toggleForm, toggleForm2 }) => {
-  const [username, setUsername] = useState('');
+const LoginComponent = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-   
 
-    
     const loginData = {
-      username,
-      password
+      email,
+      password,
     };
 
     try {
-  
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(loginData),
       });
 
       if (response.ok) {
-        
-        console.log('User exists');
-        navigate("/");
+        const data = await response.json();
+        const { token, name, email } = data; // Extract the username from the response data
+        dispatch(setToken({ token, name , email})); 
+        console.log('Token:', token); // Log the token value
+        console.log('Name:', name); // Pass both token and username to setToken action
+        console.log('Email:', email);
+
+        console.log('Login successful');
+        navigate('/');
       } else {
-        
-        console.log('User does not exist');
+        console.log('Invalid email or password');
       }
     } catch (error) {
-      
       console.error('Error:', error);
     }
-
-
   };
 
-  const handleRegisterClick = () => {
-    toggleForm2();
+  const handleRegisterClick = (e) => {
+    e.preventDefault();
+    navigate('/signup');
+  };
+
+  const handlePass = (e) => {
+    e.preventDefault();
+    navigate('/pass');
   };
 
   return (
     <div>
-      <h3 className='text-center text-white pt-5'>Login form</h3>
-      <div className='container'>
-        <div id='login-row' className='row justify-content-center align-items-center'>
-          <div id='login-column' className='col-md-6'>
-            <div id='login-box' className='col-md-12'>
-              <form id='login-form' className='form' onSubmit={handleSubmit}>
-                <h3 className='text-center text-info'>Login</h3>
-                <div className='form-group'>
-                  <label htmlFor='username' className='text-info'>
-                    Username:
+      <h3 className="text-center text-white pt-5">Login form</h3>
+      <div className="container">
+        <div id="login-row" className="row justify-content-center align-items-center">
+          <div id="login-column" className="col-md-6">
+            <div id="login-box" className="col-md-12">
+              <form id="login-form" className="form" onSubmit={handleSubmit}>
+                <h3 className="text-center text-info">Login</h3>
+                <div className="form-group">
+                  <label htmlFor="email" className="text-info">
+                    Email:
                   </label>
                   <input
-                    type='text'
-                    name='username'
-                    id='username'
-                    className='form-control'
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
+                    type="text"
+                    name="email"
+                    id="email"
+                    className="form-control"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='password' className='text-info'>
+                <div className="form-group">
+                  <label htmlFor="password" className="text-info">
                     Password:
                   </label>
                   <input
-                    type='password'
-                    name='password'
-                    id='password'
-                    className='form-control'
+                    type="password"
+                    name="password"
+                    id="password"
+                    className="form-control"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <div className='form-check'>
-                    <input className='form-check-input' type='checkbox' id='remember-me' name='remember-me' />
-                    <label className='form-check-label' htmlFor='remember-me'>
+                <div className="form-group">
+                  <div className="form-check">
+                    <input className="form-check-input" type="checkbox" id="remember-me" name="remember-me" />
+                    <label className="form-check-label" htmlFor="remember-me">
                       Remember me
                     </label>
                   </div>
                 </div>
-                <div className='form-group'>
-                  <input type='submit' name='submit' className='btn btn-info btn-md' value='Submit' />
+                <div className="form-group">
+                  <input type="submit" name="submit" className="btn btn-info btn-md" value="Submit" />
                 </div>
-                <div id='register-link' className='text-right'>
-                  <a href='#' className='text-info' onClick={handleRegisterClick}>
+                <div id="register-link" className="text-right">
+                  <a href="#" className="text-info" onClick={handlePass}>
                     Forgot password
                   </a>
-                  <div className='text-right'>
-                    <a href='#' className='text-info' onClick={toggleForm}>
+                  <div className="text-right">
+                    <a href="#" className="text-info" onClick={handleRegisterClick}>
                       Register Here
                     </a>
                   </div>
@@ -110,11 +118,6 @@ const LoginComponent = ({ toggleForm, toggleForm2 }) => {
       </div>
     </div>
   );
-};
-
-LoginComponent.propTypes = {
-  toggleForm: PropTypes.func.isRequired,
-  toggleForm2: PropTypes.func.isRequired,
 };
 
 export default LoginComponent;
