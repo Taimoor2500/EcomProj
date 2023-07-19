@@ -8,7 +8,7 @@ import Signup from "./components/auth/SignupComponent";
 import Pass from "./components/auth/password";
 import Cart from "./components/orders/Cart";
 import Order from "./components/orders/Order";
-import ConfirmPass from "./components/auth/ConfirmPass";
+
 
 
 
@@ -19,7 +19,6 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/reset-password" element={<ConfirmPass />} />
           <Route path="/login" element={<Login />} />
           <Route path="/Cart" element={<Cart />} />
           <Route path="/Order" element={<Order />} /> 
