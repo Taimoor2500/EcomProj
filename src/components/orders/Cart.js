@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../main/Navbar";
@@ -25,6 +25,7 @@ function generateUniqueNumber() {
 }
 
 const CartItems = () => {
+  const [updatedStocks, setUpdatedStocks] = useState([]); // Array to store updated stock quantities
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,15 +47,53 @@ const CartItems = () => {
   useEffect(() => {
     const cartData = JSON.parse(localStorage.getItem("cart"));
     if (cartData) {
-      dispatch(setCart(cartData));
+     
+      const updatedCart = cartData.map((product) => ({
+        ...product,
+        stock: product.stock,
+        quantity: 1,
+      }));
+      dispatch(setCart(updatedCart));
     }
   }, [dispatch]);
 
-  const getProductImage = (product) => {
-    const filename = product.image.substring(
-      product.image.lastIndexOf("/") + 1
-    );
-    return require(`../../images/${filename}`);
+ const increaseQuantityHandler = (id) => {
+  const product = cart.find((item) => item._id === id);
+  if (product && product.quantity < product.stock) { 
+    dispatch(increaseQuantity(id));
+
+    
+    const updatedStockItem = { productId: id, newStock: product.stock - 1 };
+    setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
+  }
+};
+
+const decreaseQuantityHandler = (id) => {
+  const product = cart.find((item) => item._id === id);
+  if (product && product.quantity > 1) {
+    dispatch(decreaseQuantity(id));
+
+   
+    const updatedStockItem = { productId: id, newStock: product.stock + 1 };
+    setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
+  }
+};
+
+
+  const updateProductStockOnOrder = async () => {
+    const updatedStocks = cart.map((product) => {
+      const newStock = product.stock - (product.quantity || 1);
+      return { productId: product._id, newStock };
+    });
+  
+    console.log(updatedStocks);
+  
+    try {
+      await axios.put("http://localhost:5000/api/products/updateStock", { products: updatedStocks });
+    } catch (error) {
+      console.error("Error updating product stock on order:", error);
+      // Handle error (display error message or retry, etc.)
+    }
   };
 
   const placeOrder = async () => {
@@ -62,47 +101,55 @@ const CartItems = () => {
       navigate("/login");
       return;
     }
-
-   
-
+  
     try {
-      const products = cart.map((product) => ({
-        title: {
-          name: product.title,
-          image: product.image,
-        },
-        color: product.color,
-        price: product.price,
-        quantity: product.quantity || 1,
-      }));
-
+      // Update stock quantities for the products in the cart
+      await updateProductStockOnOrder();
+  
+      const products = cart.map((product) => {
+        const quantity = product.quantity || 1;
+        const updatedStock = product.stock - (product.quantity === undefined ? 1 : 0);
+        return {
+          title: {
+            name: product.title,
+            image: product.image,
+          },
+          color: product.color,
+          price: product.price,
+          quantity: quantity,
+          stock: updatedStock,
+        };
+      });
+  
       const orderNumber = generateUniqueNumber();
-      
-
+  
       const orderData = {
-        email : email,
+        email: email,
         date: new Date(),
         orderNumber,
         products,
         amount: calculateTotalAmount(),
       };
-
+  
+      // Now you can proceed with placing the order
       const response = await axios.post(
         "http://localhost:5000/api/orders",
         orderData
       );
       console.log(response.data);
-
+  
+     
       dispatch(setCart([]));
       dispatch(resetCounter());
-      
-
+  
       navigate("/Order");
     } catch (error) {
-      
       console.error("Error placing order:", error);
+     
     }
   };
+
+
 
   const calculateTotalAmount = () => {
     const subTotal = cart.reduce(
@@ -133,6 +180,13 @@ const CartItems = () => {
         <h5 className="mb-0">Total (with Tax): ${totalWithTax.toFixed(2)}</h5>
       </div>
     );
+  };
+
+  const getProductImage = (product) => {
+    const filename = product.image.substring(
+      product.image.lastIndexOf("/") + 1
+    );
+    return require(`../../images/${filename}`);
   };
 
   return (
@@ -186,15 +240,11 @@ const CartItems = () => {
                         <td>{product.color}</td>
                         <td>
                           <DecreaseQuantityButton
-                            onClick={() =>
-                              dispatch(decreaseQuantity(product._id))
-                            }
+                            onClick={() => decreaseQuantityHandler(product._id)}
                           />
                           {product.quantity || 1}
                           <IncreaseQuantityButton
-                            onClick={() =>
-                              dispatch(increaseQuantity(product._id))
-                            }
+                            onClick={() => increaseQuantityHandler(product._id)}
                           />
                         </td>
                         <td>

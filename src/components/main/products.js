@@ -7,7 +7,6 @@ import { increment } from '../../redux/reducers/counter';
 import { addToCart } from '../../redux/reducers/cart';
 import { useNavigate } from 'react-router-dom';
 
-
 const ProductCard = ({ searchQuery, sort, page }) => {
   const [sortedProducts, setSortedProducts] = useState([]);
   const [displayedProducts, setDisplayedProducts] = useState([]);
@@ -102,11 +101,17 @@ const ProductCard = ({ searchQuery, sort, page }) => {
                   <p className="card-text">Price: ${product.price}</p>
                   <div className="text-end">
                     <button
-                      className={`btn ${isProductOrdered(product) ? 'btn-danger' : 'btn-primary'}`}
+                      className={`btn ${
+                        isProductOrdered(product) || product.stock === 0 ? 'btn-danger' : 'btn-primary'
+                      }`}
                       onClick={() => handleOrder(product)}
-                      disabled={isProductOrdered(product)}
+                      disabled={isProductOrdered(product) || product.stock === 0}
                     >
-                      {isProductOrdered(product) ? 'Ordered' : 'Order Now'}
+                      {isProductOrdered(product)
+                        ? 'Ordered'
+                        : product.stock === 0
+                        ? 'Out of Stock'
+                        : 'Order Now'}
                     </button>
                   </div>
                 </div>

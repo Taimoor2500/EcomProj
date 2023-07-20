@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setToken } from '../../redux/reducers/sessionSlice';
@@ -29,10 +28,10 @@ const LoginComponent = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const { token, name, email } = data; // Extract the username from the response data
+        const { token, name, email } = data; 
         dispatch(setToken({ token, name , email})); 
-        console.log('Token:', token); // Log the token value
-        console.log('Name:', name); // Pass both token and username to setToken action
+        console.log('Token:', token); 
+        console.log('Name:', name); 
         console.log('Email:', email);
 
         console.log('Login successful');

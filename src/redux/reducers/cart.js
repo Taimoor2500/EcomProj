@@ -18,14 +18,22 @@ const cartSlice = createSlice({
       const productId = action.payload;
       const product = state.find((product) => product._id === productId);
       if (product) {
-        product.quantity = (product.quantity || 1) + 1;
+        if (product.quantity < product.stock) {
+          product.quantity += 1;
+        }
       }
     },
     decreaseQuantity: (state, action) => {
       const productId = action.payload;
       const product = state.find((product) => product._id === productId);
-      if (product && product.quantity > 1) {
-        product.quantity -= 1;
+      if (product) {
+        if (product.quantity === product.stock) {
+          // User has not manually increased the quantity, decrease by 1 from stock
+          product.quantity -= 1;
+        } else if (product.quantity > 1) {
+          // User has manually decreased the quantity, decrease by user-specified quantity
+          product.quantity -= 1;
+        }
       }
     },
     setCart: (state, action) => {

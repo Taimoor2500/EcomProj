@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Footer = ({ onPageChange }) => {
   const [pageNumber, setPageNumber] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   const handlePageChange = (page) => {
     setPageNumber(page);
@@ -10,8 +12,25 @@ const Footer = ({ onPageChange }) => {
   };
 
   useEffect(() => {
-    console.log(pageNumber);
-  }, [pageNumber]);
+   
+    fetchTotalProducts();
+  }, []);
+
+  const fetchTotalProducts = () => {
+   
+    axios.get('http://localhost:5000/api/products/count')
+      .then((response) => {
+        setTotalProducts(response.data.totalCount);
+
+        console.log(totalProducts);
+      })
+      .catch((error) => {
+        console.error('Error fetching total products count:', error);
+      });
+  };
+
+  const productsPerPage = 8;
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
 
   return (
     <footer className="footer bg-light fixed-bottom">
@@ -23,35 +42,37 @@ const Footer = ({ onPageChange }) => {
           <div className="col-12 col-md-6">
             <nav aria-label="Pagination">
               <ul className="pagination justify-content-end mb-0">
-                <li className="page-item">
+                <li className={`page-item ${pageNumber === 1 ? 'disabled' : ''}`}>
                   <a
                     className="page-link"
                     href="#previous"
                     onClick={() => handlePageChange(pageNumber - 1)}
+                    disabled={pageNumber === 1}
                   >
                     Previous
                   </a>
                 </li>
-                <li className={`page-item ${pageNumber === 1 ? 'active' : ''}`}>
-                  <a className="page-link" href="#1" onClick={() => handlePageChange(1)}>
-                    1
-                  </a>
-                </li>
-                <li className={`page-item ${pageNumber === 2 ? 'active' : ''}`}>
-                  <a className="page-link" href="#2" onClick={() => handlePageChange(2)}>
-                    2
-                  </a>
-                </li>
-                <li className={`page-item ${pageNumber === 3 ? 'active' : ''}`}>
-                  <a className="page-link" href="#3" onClick={() => handlePageChange(3)}>
-                    3
-                  </a>
-                </li>
-                <li className="page-item">
+                {/* Generate pagination numbers dynamically */}
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <li
+                    key={index}
+                    className={`page-item ${pageNumber === index + 1 ? 'active' : ''}`}
+                  >
+                    <a
+                      className="page-link"
+                      href={`#${index + 1}`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </a>
+                  </li>
+                ))}
+                <li className={`page-item ${pageNumber === totalPages ? 'disabled' : ''}`}>
                   <a
                     className="page-link"
                     href="#next"
                     onClick={() => handlePageChange(pageNumber + 1)}
+                    disabled={pageNumber === totalPages}
                   >
                     Next
                   </a>
