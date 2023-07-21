@@ -42,7 +42,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
 
   const handleSignOut = () => {
     dispatch(clearSession());
-   
+    localStorage.removeItem('token');
   };
 
   return (
@@ -65,36 +65,35 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
             <ul className="navbar-nav ms-auto">
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
-                  <div className="position-relative d-inline-block">
-                    <FaShoppingBag color="black" />
-                    {itemCount > 0 && (
-                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                        {itemCount}
-                      </span>
-                    )}
+                  <div className="d-flex align-items-center"> {/* Wrap items in a flex container */}
+                    <div className="position-relative d-inline-block me-3"> {/* Added class 'me-3' */}
+                      <FaShoppingBag color="black" />
+                      {itemCount > 0 && (
+                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                          {itemCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </Link>
               </li>
 
-
               <li className="nav-item">
-              {session.token ? (
-                <Dropdown>
-                  <Dropdown.Toggle variant="secondary" id="userDropdown">
-                    {session.name}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              ) : (
-                <Link to="/login" className="nav-link text-black">
-                  Login
-                </Link>
-              )}
-            </li>
-
-
+                {session.token ? (
+                  <Dropdown>
+                    <Dropdown.Toggle variant="secondary" id="userDropdown">
+                      {session.name}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                ) : (
+                  <Link to="/login" className="nav-link text-black">
+                    Login
+                  </Link>
+                )}
+              </li>
             </ul>
           </div>
         </div>

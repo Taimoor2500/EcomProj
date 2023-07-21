@@ -6,6 +6,7 @@ import { setToken } from '../../redux/reducers/sessionSlice';
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,11 +29,14 @@ const LoginComponent = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const { token, name, email } = data; 
-        dispatch(setToken({ token, name , email})); 
-        console.log('Token:', token); 
-        console.log('Name:', name); 
-        console.log('Email:', email);
+        const { token, name, email } = data;
+
+        if (rememberMe) {
+          localStorage.setItem('token', JSON.stringify({ token, name, email }));
+        }
+
+        dispatch(setToken({ token, name, email }));
+        
 
         console.log('Login successful');
         navigate('/');
@@ -91,7 +95,15 @@ const LoginComponent = () => {
                 </div>
                 <div className="form-group">
                   <div className="form-check">
-                    <input className="form-check-input" type="checkbox" id="remember-me" name="remember-me" />
+                    {/* "Remember Me" checkbox */}
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="remember-me"
+                      name="remember-me"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
                     <label className="form-check-label" htmlFor="remember-me">
                       Remember me
                     </label>
