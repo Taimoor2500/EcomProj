@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { FaShoppingBag } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { clearSession } from '../../redux/reducers/sessionSlice';
 
 const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [expanded, setExpanded] = useState(false);
@@ -13,6 +15,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
   const itemCount = useSelector((state) => state.counter);
   const session = useSelector((state) => state.session);
   const [searchQuery, setSearchQuery] = useState('');
+  const dispatch = useDispatch();
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -37,7 +40,10 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
     onSortOptionChange(option);
   };
 
- 
+  const handleSignOut = () => {
+    dispatch(clearSession());
+   
+  };
 
   return (
     <div className="container-fluid">
@@ -69,15 +75,26 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                   </div>
                 </Link>
               </li>
+
+
               <li className="nav-item">
-                {session.token ? (
-                  <span className="nav-link text-black">Welcome, {session.name}</span>
-                ) : (
-                  <Link to="/login" className="nav-link text-black">
-                    Login
-                  </Link>
-                )}
-              </li>
+              {session.token ? (
+                <Dropdown>
+                  <Dropdown.Toggle variant="secondary" id="userDropdown">
+                    {session.name}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              ) : (
+                <Link to="/login" className="nav-link text-black">
+                  Login
+                </Link>
+              )}
+            </li>
+
+
             </ul>
           </div>
         </div>

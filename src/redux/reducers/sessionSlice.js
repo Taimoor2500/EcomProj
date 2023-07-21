@@ -13,9 +13,14 @@ const sessionReducer = createSlice({
       state.name = action.payload.name;
       state.email = action.payload.email;
     },
+    clearSession: (state) => {
+      state.token = '';
+      state.name = '';
+      state.email = '';
+    },
   },
 });
 
-export const { setToken } = sessionReducer.actions;
+export const { setToken,clearSession } = sessionReducer.actions;
 
 export default sessionReducer.reducer;
