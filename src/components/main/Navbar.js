@@ -6,6 +6,8 @@ import { FaShoppingBag } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearSession } from '../../redux/reducers/sessionSlice';
+import { resetCounter } from '../../redux/reducers/counter';
+import { setCart } from '../../redux/reducers/cart';
 
 const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [expanded, setExpanded] = useState(false);
@@ -42,6 +44,8 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
 
   const handleSignOut = () => {
     dispatch(clearSession());
+    dispatch(resetCounter());
+    dispatch(setCart([]));
     localStorage.removeItem('token');
   };
 
@@ -65,8 +69,8 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
             <ul className="navbar-nav ms-auto">
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
-                  <div className="d-flex align-items-center"> {/* Wrap items in a flex container */}
-                    <div className="position-relative d-inline-block me-3"> {/* Added class 'me-3' */}
+                  <div className="d-flex align-items-center"> 
+                    <div className="position-relative d-inline-block me-3"> 
                       <FaShoppingBag color="black" />
                       {itemCount > 0 && (
                         <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">

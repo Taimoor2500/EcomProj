@@ -16,6 +16,7 @@ import {
 } from "../../redux/reducers/cart";
 import { resetCounter } from "../../redux/reducers/counter";
 import { decrement } from "../../redux/reducers/counter";
+
 import axios from "axios";
 
 function generateUniqueNumber() {
@@ -25,12 +26,13 @@ function generateUniqueNumber() {
 }
 
 const CartItems = () => {
-  const [updatedStocks, setUpdatedStocks] = useState([]); // Array to store updated stock quantities
+  const [updatedStocks, setUpdatedStocks] = useState([]);
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const session = useSelector((state) => state.session);
   const { email } = useSelector((state) => state.session);
+  const itemCount = useSelector((state) => state.counter);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -92,7 +94,7 @@ const decreaseQuantityHandler = (id) => {
       await axios.put("http://localhost:5000/api/products/updateStock", { products: updatedStocks });
     } catch (error) {
       console.error("Error updating product stock on order:", error);
-      // Handle error (display error message or retry, etc.)
+      
     }
   };
 
@@ -103,7 +105,7 @@ const decreaseQuantityHandler = (id) => {
     }
   
     try {
-      // Update stock quantities for the products in the cart
+     
       await updateProductStockOnOrder();
   
       const products = cart.map((product) => {
@@ -131,7 +133,7 @@ const decreaseQuantityHandler = (id) => {
         amount: calculateTotalAmount(),
       };
   
-      // Now you can proceed with placing the order
+      
       const response = await axios.post(
         "http://localhost:5000/api/orders",
         orderData

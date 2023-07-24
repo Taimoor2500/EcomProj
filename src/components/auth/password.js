@@ -10,14 +10,17 @@ const ResetPasswordForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
+  var text = "";
   const handleSendToken = () => {
     axios
       .post('http://localhost:5000/api/login/check', { email })
       .then(response => {
         setShowEmailInput(false);
+      
       })
       .catch(error => {
-        setErrorMessage('Error sending reset token. Please try again.');
+        text = "Error sending reset token. Please try again.";
+        setErrorMessage(text);
       });
   };
 
