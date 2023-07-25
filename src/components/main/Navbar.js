@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clearSession } from '../../redux/reducers/sessionSlice';
 import { resetCounter } from '../../redux/reducers/counter';
 import { setCart } from '../../redux/reducers/cart';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ onSearch, onSortOptionChange }) => {
   const [expanded, setExpanded] = useState(false);
@@ -18,6 +19,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
   const session = useSelector((state) => state.session);
   const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -47,6 +49,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
     dispatch(resetCounter());
     dispatch(setCart([]));
     localStorage.removeItem('token');
+    navigate('/');
   };
 
   return (

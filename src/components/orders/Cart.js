@@ -13,10 +13,11 @@ import {
   increaseQuantity,
   decreaseQuantity,
   setCart,
+  releaseExpiredProducts,
 } from "../../redux/reducers/cart";
 import { resetCounter } from "../../redux/reducers/counter";
 import { decrement } from "../../redux/reducers/counter";
-
+import { getCartLength } from "../../redux/reducers/cart";
 import axios from "axios";
 
 function generateUniqueNumber() {
@@ -33,10 +34,33 @@ const CartItems = () => {
   const session = useSelector((state) => state.session);
   const { email } = useSelector((state) => state.session);
   const itemCount = useSelector((state) => state.counter);
+  const cartLength = useSelector(getCartLength);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  const reserveCartProducts = async () => {
+    if (cart.length === 0) {
+      
+      return;
+    }
+
+    try {
+      const userEmail = session.email;
+      const productsData = cart.map((product) => ({
+        productId: product._id,
+        quantity: product.quantity || 1,
+      }));
+      await axios.post("http://localhost:5000/api/products/reserve", {
+        userEmail: userEmail,
+        products: productsData,
+      });
+      dispatch(releaseExpiredProducts());
+    } catch (error) {
+      console.error("Error reserving cart products:", error);
+    }
+  };
 
   const remItem = (id) => {
     dispatch(removeFromCart(id));
@@ -46,68 +70,79 @@ const CartItems = () => {
     }, 100);
   };
 
-  useEffect(() => {
-    const cartData = JSON.parse(localStorage.getItem("cart"));
-    if (cartData) {
-     
-      const updatedCart = cartData.map((product) => ({
-        ...product,
-        stock: product.stock,
-        quantity: 1,
-      }));
-      dispatch(setCart(updatedCart));
+  const updateReservation = async (productId, quantity) => {
+    try {
+      const email = session.email;
+      const response = await axios.put("http://localhost:5000/api/products/updateR", {
+        email,
+        productId,
+        quantity,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error updating reservation:", error);
     }
-  }, [dispatch]);
+  };
 
- const increaseQuantityHandler = (id) => {
-  const product = cart.find((item) => item._id === id);
-  if (product && product.quantity < product.stock) { 
-    dispatch(increaseQuantity(id));
+  const increaseQuantityHandler = (id) => {
+    const product = cart.find((item) => item._id === id);
+    if (product && product.quantity < product.stock) {
+      dispatch(increaseQuantity(id));
+      const updatedStockItem = { productId: id, newStock: product.stock - 1 };
+      setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
+      updateReservation(id, product.quantity + 1);
+    }
+  };
 
-    
-    const updatedStockItem = { productId: id, newStock: product.stock - 1 };
-    setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
-  }
-};
-
-const decreaseQuantityHandler = (id) => {
-  const product = cart.find((item) => item._id === id);
-  if (product && product.quantity > 1) {
-    dispatch(decreaseQuantity(id));
-
-   
-    const updatedStockItem = { productId: id, newStock: product.stock + 1 };
-    setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
-  }
-};
-
+  const decreaseQuantityHandler = (id) => {
+    const product = cart.find((item) => item._id === id);
+    if (product && product.quantity > 1) {
+      dispatch(decreaseQuantity(id));
+      const updatedStockItem = { productId: id, newStock: product.stock + 1 };
+      setUpdatedStocks((prevStocks) => [...prevStocks, updatedStockItem]);
+      updateReservation(id, product.quantity - 1);
+    }
+  };
 
   const updateProductStockOnOrder = async () => {
     const updatedStocks = cart.map((product) => {
       const newStock = product.stock - (product.quantity || 1);
       return { productId: product._id, newStock };
     });
-  
-    console.log(updatedStocks);
-  
+
     try {
-      await axios.put("http://localhost:5000/api/products/updateStock", { products: updatedStocks });
+      await axios.put("http://localhost:5000/api/products/updateStock", {
+        products: updatedStocks,
+      });
     } catch (error) {
       console.error("Error updating product stock on order:", error);
-      
     }
   };
+  const clearReservationsOnOrder = async () => {
+    try {
+      const userEmail = session.email;
+
+
+
+      await axios.delete(`http://localhost:5000/api/products/clearReservationsO/${userEmail}`);
+     
+    } catch (error) {
+      console.error("Error clearing intervals:", error);
+    }
+  };
+  
 
   const placeOrder = async () => {
     if (!session.token || session.token.trim() === "") {
       navigate("/login");
       return;
     }
+
   
+
     try {
-     
       await updateProductStockOnOrder();
-  
+
       const products = cart.map((product) => {
         const quantity = product.quantity || 1;
         const updatedStock = product.stock - (product.quantity === undefined ? 1 : 0);
@@ -122,9 +157,9 @@ const decreaseQuantityHandler = (id) => {
           stock: updatedStock,
         };
       });
-  
+
       const orderNumber = generateUniqueNumber();
-  
+
       const orderData = {
         email: email,
         date: new Date(),
@@ -132,31 +167,23 @@ const decreaseQuantityHandler = (id) => {
         products,
         amount: calculateTotalAmount(),
       };
-  
-      
-      const response = await axios.post(
-        "http://localhost:5000/api/orders",
-        orderData
-      );
+
+      const response = await axios.post("http://localhost:5000/api/orders", orderData);
       console.log(response.data);
-  
-     
+
       dispatch(setCart([]));
       dispatch(resetCounter());
-  
+      await clearReservationsOnOrder();
+
       navigate("/Order");
     } catch (error) {
       console.error("Error placing order:", error);
-     
     }
   };
 
-
-
   const calculateTotalAmount = () => {
     const subTotal = cart.reduce(
-      (total, product) =>
-        total + (product.price || 0) * (product.quantity || 1),
+      (total, product) => total + (product.price || 0) * (product.quantity || 1),
       0
     );
     const taxPercentage = 0.1; // 10% tax
@@ -167,8 +194,7 @@ const decreaseQuantityHandler = (id) => {
 
   const renderTotal = () => {
     const subTotal = cart.reduce(
-      (total, product) =>
-        total + (product.price || 0) * (product.quantity || 1),
+      (total, product) => total + (product.price || 0) * (product.quantity || 1),
       0
     );
     const taxPercentage = 0.1; // 10% tax
@@ -185,11 +211,58 @@ const decreaseQuantityHandler = (id) => {
   };
 
   const getProductImage = (product) => {
-    const filename = product.image.substring(
-      product.image.lastIndexOf("/") + 1
-    );
+    const filename = product.image.substring(product.image.lastIndexOf("/") + 1);
     return require(`../../images/${filename}`);
   };
+
+  const clearReservations = async () => {
+    try {
+      const userEmail = session.email;
+      await axios.delete(`http://localhost:5000/api/products/clearReservations/${userEmail}`);
+      dispatch(setCart([]));
+      dispatch(resetCounter());
+    } catch (error) {
+      console.error("Error clearing reservations and updating stock:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    const cartData = JSON.parse(localStorage.getItem("cart"));
+    if (cartData) {
+      const updatedCart = cartData.map((product) => ({
+        ...product,
+        stock: product.stock,
+        quantity: 1,
+        timestamp: 0,
+      }));
+      dispatch(setCart(updatedCart));
+    }
+
+    if (session.token && cart.length > 0) {
+      reserveCartProducts();
+    }
+
+    
+    if (cart.length > 0) {
+      cart.forEach((product) => {
+        if (product.timestamp !== 0) {
+          const timeRemaining = 60 * 1000 - (Date.now() - product.timestamp);
+          if (timeRemaining > 0) {
+            setTimeout(() => {
+              dispatch(releaseExpiredProducts());
+
+              clearReservations();
+            }, timeRemaining);
+          } 
+        }
+      });
+    }
+  }, [dispatch, session.token, cart.length]);
 
   return (
     <div>
@@ -200,10 +273,7 @@ const decreaseQuantityHandler = (id) => {
             <div className="card-body">
               <div className="table-wrapper-scroll-y my-custom-scrollbar border-0">
                 <table className="table table-responsive">
-                  <thead
-                    className="h4 text-white"
-                    style={{ background: "lightgrey" }}
-                  >
+                  <thead className="h4 text-white" style={{ background: "lightgrey" }}>
                     <tr>
                       <th scope="col" className="mb-0">
                         Product
@@ -224,11 +294,7 @@ const decreaseQuantityHandler = (id) => {
                   </thead>
                   <tbody className="h5">
                     {cart.map((product) => (
-                      <tr
-                        className="my-3"
-                        style={{ lineHeight: "unset" }}
-                        key={product._id}
-                      >
+                      <tr className="my-3" style={{ lineHeight: "unset" }} key={product._id}>
                         <th scope="row">
                           <div className="d-flex align-items-center">
                             <img
@@ -241,17 +307,11 @@ const decreaseQuantityHandler = (id) => {
                         </th>
                         <td>{product.color}</td>
                         <td>
-                          <DecreaseQuantityButton
-                            onClick={() => decreaseQuantityHandler(product._id)}
-                          />
+                          <DecreaseQuantityButton onClick={() => decreaseQuantityHandler(product._id)} />
                           {product.quantity || 1}
-                          <IncreaseQuantityButton
-                            onClick={() => increaseQuantityHandler(product._id)}
-                          />
+                          <IncreaseQuantityButton onClick={() => increaseQuantityHandler(product._id)} />
                         </td>
-                        <td>
-                          ${(product.price || 0) * (product.quantity || 1)}
-                        </td>
+                        <td>${(product.price || 0) * (product.quantity || 1)}</td>
                         <td>
                           <DeleteButton onClick={() => remItem(product._id)} />
                         </td>

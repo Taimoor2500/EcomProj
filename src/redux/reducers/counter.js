@@ -5,7 +5,10 @@ const counterSlice = createSlice({
   initialState: 0,
   reducers: {
     increment: (state) => state + 1,
-    decrement: (state) => state - 1,
+    decrement: (state) => {
+     
+      return state > 0 ? state - 1 : state;
+    },
     resetCounter: () => 0,
   },
 });
