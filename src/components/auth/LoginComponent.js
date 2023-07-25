@@ -6,7 +6,8 @@ import { setToken } from '../../redux/reducers/sessionSlice';
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false); 
+  const [rememberMe, setRememberMe] = useState(false);
+  const [loginError, setLoginError] = useState(false); // New state variable for login error
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,12 +37,12 @@ const LoginComponent = () => {
         }
 
         dispatch(setToken({ token, name, email }));
-        
 
         console.log('Login successful');
         navigate('/');
       } else {
         console.log('Invalid email or password');
+        setLoginError(true); // Set loginError state to true if the login credentials are wrong
       }
     } catch (error) {
       console.error('Error:', error);
@@ -92,6 +93,9 @@ const LoginComponent = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  {loginError && ( // Render the error message conditionally
+                    <p style={{ color: 'red' }}>Invalid credentials</p>
+                  )}
                 </div>
                 <div className="form-group">
                   <div className="form-check">
