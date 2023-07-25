@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { FaShoppingBag } from 'react-icons/fa';
+import { FaShoppingBag, FaTimes } from 'react-icons/fa'; 
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearSession } from '../../redux/reducers/sessionSlice';
@@ -18,16 +18,27 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
   const itemCount = useSelector((state) => state.counter);
   const session = useSelector((state) => state.session);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchActive, setSearchActive] = useState(false); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
+    setSearchActive(event.target.value !== ''); 
   };
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    onSearch(searchQuery);
+    if (searchQuery) {
+      setSearchActive(true);
+      onSearch(searchQuery);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchActive(false);
+    onSearch('');
   };
 
   const toggleNavbar = () => {
@@ -72,8 +83,8 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
             <ul className="navbar-nav ms-auto">
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
-                  <div className="d-flex align-items-center"> 
-                    <div className="position-relative d-inline-block me-3"> 
+                  <div className="d-flex align-items-center">
+                    <div className="position-relative d-inline-block me-3">
                       <FaShoppingBag color="black" />
                       {itemCount > 0 && (
                         <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
@@ -114,6 +125,11 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
             </div>
 
             <div className="d-flex justify-content-end gap-2">
+              {searchActive && ( 
+                <div className="clear-search-icon" onClick={handleClearSearch}>
+                  <FaTimes size={20} color="black" />
+                </div>
+              )}
               <div className="input-group" style={{ width: '180px' }}>
                 <input
                   type="text"
@@ -136,10 +152,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                 >
                   Sort By
                 </button>
-                <ul
-                  className={`dropdown-menu ${sortByOpen ? 'show' : ''}`}
-                  aria-labelledby="sortByDropdown"
-                >
+                <ul className={`dropdown-menu ${sortByOpen ? 'show' : ''}`} aria-labelledby="sortByDropdown">
                   <li>
                     <a
                       className={`dropdown-item ${selectedSortOption === 'Low' ? 'active' : ''}`}
