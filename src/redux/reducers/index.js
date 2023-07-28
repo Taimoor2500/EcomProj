@@ -4,6 +4,7 @@ import cartReducer from './cart';
 import sessionReducer from './sessionSlice';
 import  forgotPasswordReducer from './forgetPass';
 import paginationReducer from './paginationSlice';
+import orderReducer from './orderSlice';
 
 const rootReducer = combineReducers({
   counter: counterReducer, 
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   session: sessionReducer,
   forgotPassword: forgotPasswordReducer,
   pagination: paginationReducer,
+  order: orderReducer,
  
 });
 

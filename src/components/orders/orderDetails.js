@@ -3,6 +3,12 @@ import { Offcanvas } from 'react-bootstrap';
 import React from 'react';
 
 const OrderOffcanvas = ({ show, onHide, selectedOrder }) => {
+  // Function to format the date in "dd/mm/yyyy" format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
+
   return (
     <Offcanvas show={show} onHide={onHide} placement="end">
       <Offcanvas.Header closeButton>
@@ -11,7 +17,7 @@ const OrderOffcanvas = ({ show, onHide, selectedOrder }) => {
       <Offcanvas.Body>
         <div>
           <h5>Order Number: {selectedOrder.orderNumber}</h5>
-          <p>Date: {selectedOrder.date}</p>
+          <p>Date: {formatDate(selectedOrder.date)}</p>
           <p>Amount: ${selectedOrder.amount}</p>
           <h6>Products:</h6>
           <ul>

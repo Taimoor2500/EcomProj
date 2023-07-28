@@ -18,6 +18,7 @@ import {
 import { resetCounter } from "../../redux/reducers/counter";
 import { decrement } from "../../redux/reducers/counter";
 import { getCartLength } from "../../redux/reducers/cart";
+import {saveOrderData} from "../../redux/reducers/orderSlice";
 import axios from "axios";
 
 function generateUniqueNumber() {
@@ -118,18 +119,7 @@ const CartItems = () => {
       console.error("Error updating product stock on order:", error);
     }
   };
-  const clearReservationsOnOrder = async () => {
-    try {
-      const userEmail = session.email;
-
-
-
-      await axios.delete(`http://localhost:5000/api/products/clearReservationsO/${userEmail}`);
-     
-    } catch (error) {
-      console.error("Error clearing intervals:", error);
-    }
-  };
+ 
   
 
   const placeOrder = async () => {
@@ -159,7 +149,8 @@ const CartItems = () => {
       });
 
       const orderNumber = generateUniqueNumber();
-
+      
+      
       const orderData = {
         email: email,
         date: new Date(),
@@ -168,14 +159,14 @@ const CartItems = () => {
         amount: calculateTotalAmount(),
       };
 
-      const response = await axios.post("http://localhost:5000/api/orders", orderData);
-      console.log(response.data);
+      dispatch(saveOrderData(orderData));
+     
+     
 
-      dispatch(setCart([]));
-      dispatch(resetCounter());
-      await clearReservationsOnOrder();
+      
+      
 
-      navigate("/Order");
+      navigate("/pay");
     } catch (error) {
       console.error("Error placing order:", error);
     }
@@ -251,7 +242,7 @@ const CartItems = () => {
     if (cart.length > 0) {
       cart.forEach((product) => {
         if (product.timestamp !== 0) {
-          const timeRemaining = 60 * 1000 - (Date.now() - product.timestamp);
+          const timeRemaining =5* 60 * 1000 - (Date.now() - product.timestamp);
           if (timeRemaining > 0) {
             setTimeout(() => {
               dispatch(releaseExpiredProducts());

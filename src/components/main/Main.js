@@ -4,6 +4,7 @@ import Navbar from "./Navbar";
 import ProductCard from "../main/products";
 import Footer from "./footer";
 
+
 const Main = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");

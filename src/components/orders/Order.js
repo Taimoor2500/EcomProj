@@ -17,6 +17,7 @@ const Order = () => {
       try {
         const response = await fetch(`http://localhost:5000/api/orders?email=${email}`);
         const data = await response.json();
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setCartProducts(data);
       } catch (error) {
         console.error('Error fetching orders:', error);

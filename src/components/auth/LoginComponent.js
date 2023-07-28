@@ -30,16 +30,24 @@ const LoginComponent = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const { token, name, email } = data;
+        const { token, name, email, role } = data;
+        console.log(role);
 
         if (rememberMe) {
-          localStorage.setItem('token', JSON.stringify({ token, name, email }));
+          localStorage.setItem('token', JSON.stringify({ token, name, email ,role}));
         }
 
-        dispatch(setToken({ token, name, email }));
+        dispatch(setToken({ token, name, email, role }));
 
         console.log('Login successful');
-        navigate('/');
+        if(role=='admin')
+        {
+          navigate('/admin');
+        }
+        else
+        {
+          navigate('/');
+        }
       } else {
         console.log('Invalid email or password');
         setLoginError(true); // Set loginError state to true if the login credentials are wrong

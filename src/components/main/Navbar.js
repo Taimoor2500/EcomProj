@@ -84,14 +84,20 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
                   <div className="d-flex align-items-center">
+                  {location.pathname !== '/admin' && (
                     <div className="position-relative d-inline-block me-3">
+                    
                       <FaShoppingBag color="black" />
                       {itemCount > 0 && (
                         <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
                           {itemCount}
                         </span>
                       )}
+                    
                     </div>
+                  )}
+
+
                   </div>
                 </Link>
               </li>
@@ -117,7 +123,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
         </div>
       </nav>
 
-      {location.pathname !== '/Cart' && location.pathname !== '/Order' && (
+      {location.pathname !== '/Cart' && location.pathname !== '/Order' && location.pathname !== '/admin' &&(
         <nav className="navbar bg-body-tertiary">
           <div className="container-fluid">
             <div className="container-md-fluid">

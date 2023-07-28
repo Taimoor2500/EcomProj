@@ -12,7 +12,7 @@ import {
   decrementPagination,
   resetPaginationCounter,
   setTotalPages,
-} from '../../redux/reducers/paginationSlice'; // Import the pagination actions
+} from '../../redux/reducers/paginationSlice'; 
 
 const ProductCard = ({ searchQuery, sort, page }) => {
   const [products, setProducts] = useState([]);
@@ -47,7 +47,7 @@ const ProductCard = ({ searchQuery, sort, page }) => {
       const totalPages = Math.ceil(totalCount / productsPerPage);
 
 
-      dispatch(setTotalPages(totalPages)); // Set the total pages in pagination slice
+      dispatch(setTotalPages(totalPages)); 
     } catch (error) {
       console.log('Error fetching products:', error);
       setIsLoading(false);

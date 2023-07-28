@@ -6,17 +6,20 @@ const sessionReducer = createSlice({
     token: '',
     name: '',
     email: '',
+    role: '',
   },
   reducers: {
     setToken: (state, action) => {
       state.token = action.payload.token;
       state.name = action.payload.name;
       state.email = action.payload.email;
+      state.role = action.payload.role;
     },
     clearSession: (state) => {
       state.token = '';
       state.name = '';
       state.email = '';
+      state.role = '';
     },
   },
 });
