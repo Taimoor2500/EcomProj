@@ -1,13 +1,20 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setTotalPages } from "../../redux/reducers/paginationSlice";
 import NewProductForm from "./NewProductForm";
+import UpdateProductForm from "./UpdateProductForm";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import { Modal, Button } from "react-bootstrap";
 
 const ProductListComponent = ({ page }) => {
   const [products, setProducts] = useState([]);
   const [showNewProductForm, setShowNewProductForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProductToDelete, setSelectedProductToDelete] = useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,14 +24,12 @@ const ProductListComponent = ({ page }) => {
   const fetchProducts = async () => {
     console.log(page);
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/admin/products?page=${page}`
-      );
+      const response = await fetch(`http://localhost:5000/api/admin/products?page=${page}`);
       if (!response.ok) {
         throw new Error("Failed to fetch products.");
       }
       const data = await response.json();
-      console.log(data.count);
+
       const productsPerPage = 8;
       const totalPages = Math.ceil(data.count / productsPerPage);
 
@@ -35,21 +40,36 @@ const ProductListComponent = ({ page }) => {
       console.error("Error fetching products:", error);
     }
   };
+
   const getProductImage = (product) => {
-    const filename = product.image.substring(
-      product.image.lastIndexOf("/") + 1
-    );
+    const filename = product.image.substring(product.image.lastIndexOf("/") + 1);
     return require(`../../images/${filename}`);
   };
+
+  const handleEditClick = (product) => {
+    console.log("Edit clicked");
+    setSelectedProduct(product);
+    setShowUpdateForm(true);
+  };
+  const handleDeleteConfirmation = async () => {
+    try {
+      
+      fetchProducts(page);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      
+      setShowDeleteConfirmation(false);
+    }
+  };
+
+
 
   return (
     <div className="col-9">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Products</h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowNewProductForm(true)}
-        >
+        <button className="btn btn-primary" onClick={() => setShowNewProductForm(true)}>
           New Product
         </button>
       </div>
@@ -78,18 +98,30 @@ const ProductListComponent = ({ page }) => {
               <td>{product.price}</td>
               <td>{product.stock}</td>
               <td className="d-flex gap-2">
-                <MdEdit className="text-primary" />
-                <MdDelete className="text-danger" />
+                <MdEdit className="text-primary" onClick={() => handleEditClick(product)} />
+                <MdDelete
+                  className="text-danger"
+                  onClick={() => {
+                    setSelectedProductToDelete(product);
+                    setShowDeleteConfirmation(true);
+                  }}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      < NewProductForm
-        show={showNewProductForm}
-        onHide={() => setShowNewProductForm(false)}
+      <NewProductForm show={showNewProductForm} onHide={() => setShowNewProductForm(false)} />
+      <UpdateProductForm show={showUpdateForm} onHide={() => setShowUpdateForm(false)} product={selectedProduct} />
+
+      <DeleteConfirmationModal
+        show={showDeleteConfirmation}
+        onCancel={() => setShowDeleteConfirmation(false)}
+        onDelete={handleDeleteConfirmation}
+        product = {selectedProductToDelete}
       />
     </div>
+   
   );
 };
 

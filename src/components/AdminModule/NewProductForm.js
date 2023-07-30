@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
-
+import { Offcanvas, Form, Button } from "react-bootstrap";
 const NewProductForm = ({ show, onHide }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -48,94 +48,69 @@ const NewProductForm = ({ show, onHide }) => {
   };
 
   return (
-    <div className={`offcanvas offcanvas-end ${show ? "show" : ""}`} tabIndex="-1" role="dialog">
-      <div className="offcanvas-dialog">
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title">New Product</h5>
-          <button type="button" className="btn-close text-reset" onClick={onHide}></button>
-        </div>
-        <div className="offcanvas-body">
-          <form>
-            <div className="mb-3">
-              <label htmlFor="title" className="form-label">
-                Title
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <textarea
-                className="form-control"
-                id="description"
-                rows="3"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="price" className="form-label">
-                Price
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="color" className="form-label">
-                Color
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="stock" className="form-label">
-                Stock
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="stock"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="image" className="form-label">
-                Product Image
-              </label>
-              <input
-                type="file"
-                className="form-control"
-                id="image"
-                onChange={handleImageChange}
-              />
-            </div>
-            {error && <div className="alert alert-danger" role="alert">{error}</div>}
-            <button type="button" className="btn btn-primary" onClick={handleSaveProduct}>
-              Save
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+    <Offcanvas show={show} onHide={onHide} placement="end">
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>New Product</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
+        <Form>
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="price">
+            <Form.Label>Price</Form.Label>
+            <Form.Control
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="color">
+            <Form.Label>Color</Form.Label>
+            <Form.Control
+              type="text"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="stock">
+            <Form.Label>Stock</Form.Label>
+            <Form.Control
+              type="text"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="image">
+            <Form.Label>Product Image</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={handleImageChange}
+            />
+          </Form.Group>
+          {error && <div className="alert alert-danger" role="alert">{error}</div>}
+          <Button type="button" variant="primary" onClick={handleSaveProduct}>
+            Save
+          </Button>
+        </Form>
+      </Offcanvas.Body>
+    </Offcanvas>
   );
 };
+
 
 export default NewProductForm;
