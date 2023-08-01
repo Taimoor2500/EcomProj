@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { Offcanvas, Form, Button } from "react-bootstrap";
+
 const NewProductForm = ({ show, onHide }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

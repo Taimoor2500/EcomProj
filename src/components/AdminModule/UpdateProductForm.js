@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Offcanvas, Form, Button } from "react-bootstrap";
 import axios from "axios";
 
-const UpdateProductForm = ({ show, onHide, product }) => {
+const UpdateProductForm = ({ show, onHide, product, onUpdate }) => {
   const [title, setTitle] = useState(product?.title || "");
   const [price, setPrice] = useState(product?.price || "");
   const [stock, setStock] = useState(product?.stock || "");
@@ -41,6 +41,7 @@ const UpdateProductForm = ({ show, onHide, product }) => {
       }
 
       onHide(); 
+      onUpdate(); 
     } catch (error) {
       console.error("Error updating product:", error);
      

@@ -19,6 +19,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
   const session = useSelector((state) => state.session);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchActive, setSearchActive] = useState(false); 
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -63,11 +64,17 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
     navigate('/');
   };
 
+  const handleOrder = () => {
+    navigate('/Order');
+  };
+
+  const path = session.role === 'admin' ? '/admin' : '/';
+
   return (
     <div className="container-fluid">
       <nav className="navbar bg-body-tertiary navbar-expand-lg">
         <div className="container-fluid">
-          <Link to="/" className="nav-link navbar-brand navbar-brand-custom text-black">
+          <Link to={path} className="nav-link navbar-brand navbar-brand-custom text-black">
             Ecommerce
           </Link>
           <button
@@ -84,20 +91,16 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
               <li className="nav-item active">
                 <Link to="/Cart" className="nav-link">
                   <div className="d-flex align-items-center">
-                  {location.pathname !== '/admin' && (
-                    <div className="position-relative d-inline-block me-3">
-                    
-                      <FaShoppingBag color="black" />
-                      {itemCount > 0 && (
-                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                          {itemCount}
-                        </span>
-                      )}
-                    
-                    </div>
-                  )}
-
-
+                    {location.pathname !== '/admin' && (
+                      <div className="position-relative d-inline-block me-3">
+                        <FaShoppingBag color="black" />
+                        {itemCount > 0 && (
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                            {itemCount}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </Link>
               </li>
@@ -110,6 +113,12 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+                      
+                      {/* Render the "Orders" option only if the role is not "admin" */}
+                      {session.role !== 'admin' && (
+                        <Dropdown.Item onClick={handleOrder}>Orders</Dropdown.Item>
+                      )}
+                   
                     </Dropdown.Menu>
                   </Dropdown>
                 ) : (
@@ -161,7 +170,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                 <ul className={`dropdown-menu ${sortByOpen ? 'show' : ''}`} aria-labelledby="sortByDropdown">
                   <li>
                     <a
-                      className={`dropdown-item ${selectedSortOption === 'Low' ? 'active' : ''}`}
+                      className={`dropdown-item ${selectedSortOption === 'low' ? 'active' : ''}`}
                       href="#"
                       onClick={() => handleSortOptionChange('low')}
                     >
@@ -170,7 +179,7 @@ const Navbar = ({ onSearch, onSortOptionChange }) => {
                   </li>
                   <li>
                     <a
-                      className={`dropdown-item ${selectedSortOption === 'High' ? 'active' : ''}`}
+                      className={`dropdown-item ${selectedSortOption === 'high' ? 'active' : ''}`}
                       href="#"
                       onClick={() => handleSortOptionChange('high')}
                     >

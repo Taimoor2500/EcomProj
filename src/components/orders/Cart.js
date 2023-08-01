@@ -242,7 +242,7 @@ const CartItems = () => {
     if (cart.length > 0) {
       cart.forEach((product) => {
         if (product.timestamp !== 0) {
-          const timeRemaining =5* 60 * 1000 - (Date.now() - product.timestamp);
+          const timeRemaining = 60 * 1000 - (Date.now() - product.timestamp);
           if (timeRemaining > 0) {
             setTimeout(() => {
               dispatch(releaseExpiredProducts());

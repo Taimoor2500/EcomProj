@@ -35,7 +35,12 @@ const App = () => {
           <Route path="/Order" element={<Order />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/pass" element={<Pass />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={
+              <AuthenticationGuard>
+                <Admin />
+              </AuthenticationGuard>
+            }
+ />
           <Route
             path="/pay"
             element={

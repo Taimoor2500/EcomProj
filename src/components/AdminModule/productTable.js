@@ -13,13 +13,14 @@ const ProductListComponent = ({ page }) => {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [updateTrigger, setUpdateTrigger] = useState(false);
   const [selectedProductToDelete, setSelectedProductToDelete] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     fetchProducts(page);
-  }, [page]);
+  }, [page , updateTrigger]);
 
   const fetchProducts = async () => {
     console.log(page);
@@ -47,7 +48,6 @@ const ProductListComponent = ({ page }) => {
   };
 
   const handleEditClick = (product) => {
-    console.log("Edit clicked");
     setSelectedProduct(product);
     setShowUpdateForm(true);
   };
@@ -98,7 +98,8 @@ const ProductListComponent = ({ page }) => {
               <td>{product.price}</td>
               <td>{product.stock}</td>
               <td className="d-flex gap-2">
-                <MdEdit className="text-primary" onClick={() => handleEditClick(product)} />
+                <MdEdit className="text-primary" onClick={() => handleEditClick(product)}
+                   />
                 <MdDelete
                   className="text-danger"
                   onClick={() => {
@@ -112,7 +113,8 @@ const ProductListComponent = ({ page }) => {
         </tbody>
       </table>
       <NewProductForm show={showNewProductForm} onHide={() => setShowNewProductForm(false)} />
-      <UpdateProductForm show={showUpdateForm} onHide={() => setShowUpdateForm(false)} product={selectedProduct} />
+      <UpdateProductForm show={showUpdateForm} onHide={() => setShowUpdateForm(false)} product={selectedProduct}
+      onUpdate={() => setUpdateTrigger(!updateTrigger)} />
 
       <DeleteConfirmationModal
         show={showDeleteConfirmation}

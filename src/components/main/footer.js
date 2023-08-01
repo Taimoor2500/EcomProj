@@ -26,12 +26,12 @@ const Footer = ({ onPageChange }) => {
       <div className="container">
         <div className="row align-items-center">
           <div className="col-12 col-md-6">
-            <span className="footer-text">MY products shown</span>
+           
           </div>
           <div className="col-12 col-md-6">
             <Pagination
-              pageNumber={pagination.pageNumber} // Pass the pageNumber prop here
-              totalPages={pagination.totalPages} // Use the totalPages from the state
+              pageNumber={pagination.pageNumber} 
+              totalPages={pagination.totalPages} 
               onPageChange={handlePageChange}
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
